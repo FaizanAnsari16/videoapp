@@ -55,7 +55,9 @@ export class CallService {
             }
             else {videostatus=true}
             audiostatus=true
-            const stream = await navigator.mediaDevices.getUserMedia({ video: videostatus, audio: audiostatus });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: videostatus?
+                { facingMode: camerastatus?{exact:"environment"}:"user" }:videostatus
+                , audio: audiostatus });
             console.log('establishMediaCall')
             const connection = this.peer.connect(remotePeerId);
             connection.on('error', err => {
@@ -103,7 +105,8 @@ public async toggleVideo() {
             else
             {
                 if(host){videostatus=false}
-            const stream = await navigator.mediaDevices.getUserMedia({ video:videostatus, audio: audiostatus });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: videostatus?
+                { facingMode: camerastatus?{exact:"environment"}:"user" }:videostatus, audio: audiostatus });
             this.localStreamBs.next(stream);
             this.peer.on('call', async (call) => {
     
@@ -148,7 +151,10 @@ public async toggleVideo() {
             {
                 if(host){videostatus=false}
 
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: camerastatus?{exact:"environment"}:"user" }, audio: audiostatus });
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: videostatus?
+                { facingMode: camerastatus?{exact:"environment"}:"user" }:videostatus
+                , audio: audiostatus });
             this.localStreamBs.next(stream);
             this.peer.on('call', async (call) => {
     
@@ -166,7 +172,7 @@ public async toggleVideo() {
                 });
                 this.mediaCall.on('close', () => this.onCallClose());
             });}   
-            return videostatus         
+            return camerastatus        
         }
         catch (ex) {
             console.error(ex);
@@ -189,7 +195,8 @@ public async toggleVideo() {
             }
             else{
                 if(host){videostatus=false}
-                const stream = await navigator.mediaDevices.getUserMedia({ video:videostatus, audio: audiostatus });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: videostatus?
+                { facingMode: camerastatus?{exact:"environment"}:"user" }:videostatus, audio: audiostatus });
             this.localStreamBs.next(stream);
             this.peer.on('call', async (call) => {
     
@@ -223,7 +230,8 @@ public async toggleVideo() {
                 videostatus=false
             }
             audiostatus=true
-            const stream = await navigator.mediaDevices.getUserMedia({ video: videostatus, audio: audiostatus });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: videostatus?
+                { facingMode: camerastatus?{exact:"environment"}:"user" }:videostatus, audio: audiostatus });
             this.localStreamBs.next(stream);
             this.peer.on('call', async (call) => {
     
