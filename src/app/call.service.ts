@@ -3,8 +3,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import Peer from 'peerjs';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-
-
+var videostatus=false
+var audiostatus=false
+var camerastatus=false
+var host=false
 @Injectable()
 export class CallService {
 
@@ -22,6 +24,7 @@ export class CallService {
     constructor(private snackBar: MatSnackBar) { }
 
     public initPeer(): string {
+        console.log('initpeer')
         if (!this.peer || this.peer.disconnected) {
             const peerJsOptions: Peer.PeerJSOption = {
                 debug: 3,
@@ -47,8 +50,13 @@ export class CallService {
 
     public async establishMediaCall(remotePeerId: string) {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-
+            if(host){
+                videostatus=false
+            }
+            else {videostatus=true}
+            audiostatus=true
+            const stream = await navigator.mediaDevices.getUserMedia({ video: videostatus, audio: audiostatus });
+            console.log('establishMediaCall')
             const connection = this.peer.connect(remotePeerId);
             connection.on('error', err => {
                 console.error(err);
@@ -63,7 +71,6 @@ export class CallService {
             }
             this.localStreamBs.next(stream);
             this.isCallStartedBs.next(true);
-
             this.mediaCall.on('stream',
                 (remoteStream) => {
                     this.remoteStreamBs.next(remoteStream);
@@ -81,10 +88,142 @@ export class CallService {
             this.isCallStartedBs.next(false);
         }
     }
-
-    public async enableCallAnswer() {
+public async toggleVideo() {
+    console.log('object',videostatus)
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            if(videostatus){
+                videostatus=false
+            }
+            else videostatus=true
+            if(videostatus===false&&audiostatus===false){
+             this.localStreamBs?.value.getTracks().forEach(track => {
+            track.stop();
+        });
+            }
+            else
+            {
+                if(host){videostatus=false}
+            const stream = await navigator.mediaDevices.getUserMedia({ video:videostatus, audio: audiostatus });
+            this.localStreamBs.next(stream);
+            this.peer.on('call', async (call) => {
+    
+                this.mediaCall = call;
+                this.isCallStartedBs.next(true);
+    
+                this.mediaCall.answer(stream);
+                this.mediaCall.on('stream', (remoteStream) => {
+                    this.remoteStreamBs.next(remoteStream);
+                });
+                this.mediaCall.on('error', err => {
+                    this.snackBar.open(err, 'Close');
+                    this.isCallStartedBs.next(false);
+                    console.error(err);
+                });
+                this.mediaCall.on('close', () => this.onCallClose());
+            });}   
+            return videostatus         
+        }
+        catch (ex) {
+            console.error(ex);
+            this.snackBar.open(ex, 'Close');
+            this.isCallStartedBs.next(false);            
+        }
+    }
+    public async toggleHost(){
+        host=!host
+        return host
+    }
+    public async toggleCamera() {
+        try {
+            if(camerastatus){
+                camerastatus=false
+            }
+            else camerastatus=true
+            if(videostatus===false&&audiostatus===false){
+             this.localStreamBs?.value.getTracks().forEach(track => {
+            track.stop();
+        });
+            }
+            else
+            {
+                if(host){videostatus=false}
+
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: camerastatus?{exact:"environment"}:"user" }, audio: audiostatus });
+            this.localStreamBs.next(stream);
+            this.peer.on('call', async (call) => {
+    
+                this.mediaCall = call;
+                this.isCallStartedBs.next(true);
+    
+                this.mediaCall.answer(stream);
+                this.mediaCall.on('stream', (remoteStream) => {
+                    this.remoteStreamBs.next(remoteStream);
+                });
+                this.mediaCall.on('error', err => {
+                    this.snackBar.open(err, 'Close');
+                    this.isCallStartedBs.next(false);
+                    console.error(err);
+                });
+                this.mediaCall.on('close', () => this.onCallClose());
+            });}   
+            return videostatus         
+        }
+        catch (ex) {
+            console.error(ex);
+            camerastatus=false
+            this.snackBar.open(`You Don't have a rear camera in your device`, 'Close');
+            // this.isCallStartedBs.next(false);            
+        }
+    }
+    public async toggleAudio() {
+        console.log('a',audiostatus)
+        try {
+            if(audiostatus){
+                audiostatus=false
+            }
+            else audiostatus=true
+            if(videostatus===false&&audiostatus===false){
+             this.localStreamBs?.value.getTracks().forEach(track => {
+            track.stop();
+        });
+            }
+            else{
+                if(host){videostatus=false}
+                const stream = await navigator.mediaDevices.getUserMedia({ video:videostatus, audio: audiostatus });
+            this.localStreamBs.next(stream);
+            this.peer.on('call', async (call) => {
+    
+                this.mediaCall = call;
+                this.isCallStartedBs.next(true);
+    
+                this.mediaCall.answer(stream);
+                this.mediaCall.on('stream', (remoteStream) => {
+                    this.remoteStreamBs.next(remoteStream);
+                });
+                this.mediaCall.on('error', err => {
+                    this.snackBar.open(err, 'Close');
+                    this.isCallStartedBs.next(false);
+                    console.error(err);
+                });
+                this.mediaCall.on('close', () => this.onCallClose());
+            });}            
+            return audiostatus
+        }
+        catch (ex) {
+            console.error(ex);
+            this.snackBar.open(ex, 'Close');
+            this.isCallStartedBs.next(false);            
+            
+        }
+    }
+    public async enableCallAnswer() {
+        console.log('enableCallAnswer')
+        try {
+            if(host){
+                videostatus=false
+            }
+            audiostatus=true
+            const stream = await navigator.mediaDevices.getUserMedia({ video: videostatus, audio: audiostatus });
             this.localStreamBs.next(stream);
             this.peer.on('call', async (call) => {
     
@@ -111,6 +250,11 @@ export class CallService {
     }
 
     private onCallClose() {
+        
+        console.log('onCallClose')
+        videostatus=false
+        audiostatus=false
+        camerastatus=false
         this.remoteStreamBs?.value.getTracks().forEach(track => {
             track.stop();
         });
@@ -121,6 +265,9 @@ export class CallService {
     }
 
     public closeMediaCall() {
+        this.localStreamBs?.value.getTracks().forEach(track => {
+            track.stop();})
+        console.log('closeMediaCall')
         this.mediaCall?.close();
         if (!this.mediaCall) {
             this.onCallClose()
@@ -129,6 +276,11 @@ export class CallService {
     }
 
     public destroyPeer() {
+        videostatus=false
+        audiostatus=false
+        camerastatus=false
+        
+        console.log('destroypeer')
         this.mediaCall?.close();
         this.peer?.disconnect();
         this.peer?.destroy();

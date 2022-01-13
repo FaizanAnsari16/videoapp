@@ -13,12 +13,13 @@ import { FormsModule } from '@angular/forms';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CallService } from './call.service';
-
+import { StatusService } from './status.service';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CallInfoDialogComponents
+    CallInfoDialogComponents,
   ],
   imports: [
     BrowserModule,
@@ -30,10 +31,12 @@ import { CallService } from './call.service';
     MatFormFieldModule,
     MatInputModule,
     ClipboardModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatIconModule
   ],
   providers: [
-    CallService
+    CallService,
+    StatusService
   ],
   bootstrap: [AppComponent]
 })

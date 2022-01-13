@@ -12,9 +12,8 @@ export class CallInfoDialogComponents {
     constructor(
         public dialogRef: MatDialogRef<CallInfoDialogComponents>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData,
-        private _snackBar: MatSnackBar
+        private _snackBar: MatSnackBar,
     ) { }
-
     public showCopiedSnackBar() {        
         this._snackBar.open('Peer ID Copied!', 'Hurrah', {
         duration: 1000,
