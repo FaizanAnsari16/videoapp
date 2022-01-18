@@ -3,7 +3,10 @@
     // background-color: #343434;
 	border-radius: 4px;
 }
-
+.p-2{
+	justify-content: space-evenly;
+	margin:0 18px
+}
 #remote-video {
 	max-width: 100%;
 	max-height: 90vh;
@@ -39,4 +42,12 @@
 	// max-height: 10rem;
 	// border: 3px solid white;
 	// border-radius: 4px;
+}
+@media only screen and (max-width: 600px) {
+#remote-video {
+	max-height: 60vh;
+}
+.p-2{
+	justify-content: space-between;
+}	
 }
