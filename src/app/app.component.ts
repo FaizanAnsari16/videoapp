@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { Observable, of } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 import { CallService } from './call.service';
-import { CallInfoDialogComponents, DialogData } from './dialog/callinfo-dialog.component';
 
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -16,7 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   @ViewChild('localVideo') localVideo: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo') remoteVideo: ElementRef<HTMLVideoElement>;
-  constructor(public dialog: MatDialog, private callService: CallService) {
+  constructor(public dialog: MatDialog, private callService: CallService,private router:Router) {
     this.isCallStarted$ = this.callService.isCallStarted$;
     this.peerId = this.callService.initPeer();
   }
@@ -29,6 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
   audiostatus:boolean
   videostatus:boolean
   camerastatus:boolean
+  localpeerid:boolean=localStorage.getItem('peerid')?true:false
     audioToggle(){
     this.callService.toggleAudio().then((res)=>
     this.audiostatus=res
@@ -53,35 +54,29 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(stream => this.remoteVideo.nativeElement.srcObject = stream)
       
   }
-  statusvalues:boolean=false
+  
   public startCall(){
     this.callService.enableCallAnswer()
   }
   ngOnDestroy(): void {
     this.callService.destroyPeer();
   }
-  changestats(){
-    this.callService.toggleHost().then(res=>this.statusvalues=res)
-  }
   public showModal(joinCall: boolean): void {
-    let dialogData: DialogData = joinCall ? ({ peerId: null, joinCall: true }) : ({ peerId: this.peerId, joinCall: false });
-    const dialogRef = this.dialog.open(CallInfoDialogComponents, {
-      width: '250px',
-      data: dialogData
-    });
-
-    dialogRef.afterClosed()
-      .pipe(
-        switchMap(peerId => 
-          joinCall ? of(this.callService.establishMediaCall(peerId),this.audiostatus=true,this.videostatus=true) : of(this.callService.enableCallAnswer(),this.audiostatus=true,this.videostatus=true)
-        ),
-      )
-      .subscribe(_  => { });
+    
+        if(!joinCall){localStorage.setItem('peerid',this.peerId)}
+        
+          joinCall ? of(this.callService.establishMediaCall(localStorage.getItem('peerid')),this.audiostatus=true,this.videostatus=true) : of(this.callService.enableCallAnswer(),this.audiostatus=true,this.videostatus=true)
+    
   }
   public endCall() {
+    if(this.hasRoute('/expert')){localStorage.removeItem('peerid')}
+    else {location.reload()}
     this.callService.closeMediaCall();
 this.videostatus=false
 this.audiostatus=false
 this.camerastatus=false    
+  }
+  hasRoute(route:string){
+    return this.router.url===route
   }
 }

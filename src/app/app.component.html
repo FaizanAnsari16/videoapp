@@ -1,10 +1,27 @@
-<router-outlet></router-outlet>
 <div class="container-fluid">
-  <div class="row p-2">
-    <button *ngIf="statusvalues" mat-raised-button color="primary" class="m-2" [disabled]="isCallStarted$ | async" (click)="showModal(false)">Start Call</button>
-    <button *ngIf="!statusvalues" mat-raised-button class="m-2" [disabled]="isCallStarted$ | async" (click)="showModal(true)">Join Call</button>
-    <button mat-raised-button color="warn" class="m-2" [disabled]="!(isCallStarted$ | async)" (click)="endCall()">End Call</button>
-    <button mat-raised-button color="primary" class="m-2" (click)="videoToggle()" *ngIf="!statusvalues">
+  <div class="row">
+    <div class="col text-center">
+      <div id="video-wrapper">
+        <video *ngIf="hasRoute('/expert')&&!(isCallStarted$ | async)" #remoteVideo id="remote-video" autoplay playsinline poster="./assets/video-placeholder.jpg"></video>
+        <video *ngIf="hasRoute('/user')" #localVideo id="remote-video"  [muted]=true poster="./assets/video-placeholder.jpg" autoplay playsinline></video>
+        <video *ngIf="hasRoute('/expert')&&(isCallStarted$ | async)" #remoteVideo id="remote-video" autoplay playsinline poster="./assets/video-placeholder.jpg"></video>
+      </div>
+    </div>
+  </div>
+  <div class="row p-2" style="justify-content: space-evenly;margin:0 18px">
+    
+    <button *ngIf="hasRoute('/expert')" mat-raised-button color="primary" class="m-2" [disabled]="isCallStarted$ | async" (click)="showModal(false)">Start Call</button>
+    <button mat-raised-button color="primary" class="m-2" *ngIf="hasRoute('/expert')">
+      <mat-icon a-hidden="false" aria-label="Example home icon">edit</mat-icon>
+      </button>
+      <button mat-raised-button color="primary" class="m-2" *ngIf="hasRoute('/expert')">
+      <mat-icon a-hidden="false" aria-label="Example home icon">crop_square</mat-icon>
+      </button>
+            <button mat-raised-button color="primary" class="m-2" *ngIf="hasRoute('/expert')">
+      <div class="circle"></div>
+      </button>
+    <button *ngIf="hasRoute('/user')" mat-raised-button class="m-2" [disabled]="(isCallStarted$ | async)&&localpeerid" (click)="showModal(true)">Join Call</button>
+    <button mat-raised-button color="primary" class="m-2" (click)="videoToggle()" *ngIf="hasRoute('/user')">
       <mat-icon *ngIf="!videostatus"a-hidden="false" aria-label="Example home icon">videocam_off</mat-icon>
       <mat-icon *ngIf="videostatus"a-hidden="false" aria-label="Example home icon">videocam</mat-icon>
     </button>
@@ -12,18 +29,10 @@
       <mat-icon *ngIf="!audiostatus"a-hidden="false" aria-label="Example home icon">mic_off</mat-icon>
       <mat-icon *ngIf="audiostatus"a-hidden="false" aria-label="Example home icon">mic_none</mat-icon>
     </button>
-        <button mat-raised-button color="primary" class="m-2" (click)="cameraToggle()" [disabled]="!videostatus" *ngIf="!statusvalues">
-      <mat-icon *ngIf="!camerastatus"a-hidden="false" aria-label="Example home icon">camera_front</mat-icon>
-      <mat-icon *ngIf="camerastatus"a-hidden="false" aria-label="Example home icon">camera_rear</mat-icon>
+        <button mat-raised-button color="primary" class="m-2" (click)="cameraToggle()" [disabled]="!videostatus" *ngIf="hasRoute('/user')">
+      <mat-icon a-hidden="false" aria-label="Example home icon">switch_camera</mat-icon>
+      <!-- <mat-icon *ngIf="camerastatus"a-hidden="false" aria-label="Example home icon">camera_rear</mat-icon> -->
     </button>
-    <button mat-raised-button color="primary" class="m-2" (click)="changestats()" [disabled]="(isCallStarted$ | async)">{{statusvalues?'Host':'User'}}</button>
-  </div>
-  <div class="row">
-    <div class="col text-center">
-      <div id="video-wrapper">
-        <video *ngIf="!statusvalues" #localVideo id="remote-video"  [muted]=true poster="./assets/video-placeholder.jpg" autoplay playsinline></video>
-        <video *ngIf="statusvalues" #remoteVideo id="remote-video" autoplay playsinline poster="./assets/video-placeholder.jpg"></video>
-      </div>
-    </div>
+    <button mat-raised-button color="warn" class="m-2" [disabled]="!(isCallStarted$ | async)" (click)="endCall()">End Call</button>
   </div>
 </div>

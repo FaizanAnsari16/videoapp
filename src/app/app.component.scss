@@ -1,15 +1,33 @@
 #video-wrapper {
 	text-align: center;
-    background-color: #343434;
+    // background-color: #343434;
 	border-radius: 4px;
 }
 
 #remote-video {
 	max-width: 100%;
 	max-height: 90vh;
+	height: 100vh;
 	border-radius: 4px;
 }
+.videoperview{
+	max-width: 100%;
+	max-height: 90vh;
+	height: 100vh;
+	border-radius: 4px;
+	background-color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0 10rem;
+}
+.videoperview .mat-icon{color: #fff;font-size: xxx-large;}
 
+.circle{
+	border: 3px solid;
+	border-radius: 50%;
+	height: 25px;
+}
 #local-video {
     // z-index: 1;
     // position: absolute;
