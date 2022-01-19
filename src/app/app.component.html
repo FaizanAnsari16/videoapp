@@ -1,4 +1,18 @@
 <div class="container-fluid">
+<mat-toolbar color="primary">
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Video App</span>
+  <span class="example-spacer"></span>
+  <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+    <mat-icon>favorite</mat-icon>
+  </button>
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+    <mat-icon>share</mat-icon>
+  </button>
+</mat-toolbar>
+
   <div class="row">
     <div class="col text-center">
       <div id="video-wrapper">
@@ -10,8 +24,8 @@
   </div>
   <div class="row">
  <!-- <p> -->
-  <mat-toolbar>
-    <mat-toolbar-row>
+  <mat-toolbar class="toolbar">
+    <mat-toolbar-row class="bottom-toolbar">
     <div class="toolbardiv">
        
     <button *ngIf="hasRoute('/expert')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="isCallStarted$ | async" (click)="showModal(false)">

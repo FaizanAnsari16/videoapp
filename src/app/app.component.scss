@@ -31,15 +31,18 @@
 	border-radius: 50%;
 	height: 25px;
 }
-.mat-toolbar{
+.toolbar{
 	position: fixed;
 	bottom: 0;
 }
-.mat-toolbar-row{display: flex;justify-content: center;}
-.mat-toolbar-row .toolbardiv{background-color: rgba(0,0,0,0.7);border-radius: 5px;}
+.bottom-toolbar{display: flex;justify-content: center;}
+.bottom-toolbar .toolbardiv{border-radius: 5px;}
 @media only screen and (max-width: 600px) {
 .mat-raised-button{
 	min-width: 50px;
 	padding: 1px 6px;
 }
+}
+.example-spacer {
+  flex: 1 1 auto;
 }
