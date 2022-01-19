@@ -15,7 +15,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CallService } from './call.service';
 import { StatusService } from './status.service';
 import {MatIconModule} from '@angular/material/icon';
-
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 @NgModule({
   declarations: [
@@ -34,7 +34,8 @@ import {MatIconModule} from '@angular/material/icon';
     ClipboardModule,
     MatSnackBarModule,
     MatIconModule,
-    HttpClientModule
+    HttpClientModule,
+    MatToolbarModule
   ],
   providers: [
     CallService,

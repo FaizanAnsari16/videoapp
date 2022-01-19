@@ -31,23 +31,15 @@
 	border-radius: 50%;
 	height: 25px;
 }
-#local-video {
-    // z-index: 1;
-    // position: absolute;
-    // right: 1.5rem;
-	// bottom: 1.5rem;
-	// width: 10vw;
-	// height: 10vw;
-	// max-width: 10rem;
-	// max-height: 10rem;
-	// border: 3px solid white;
-	// border-radius: 4px;
+.mat-toolbar{
+	position: fixed;
+	bottom: 0;
 }
+.mat-toolbar-row{display: flex;justify-content: center;}
+.mat-toolbar-row .toolbardiv{background-color: rgba(0,0,0,0.7);border-radius: 5px;}
 @media only screen and (max-width: 600px) {
-#remote-video {
-	max-height: 60vh;
+.mat-raised-button{
+	min-width: 50px;
+	padding: 1px 6px;
 }
-.p-2{
-	justify-content: space-between;
-}	
 }

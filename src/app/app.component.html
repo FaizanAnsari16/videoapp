@@ -8,31 +8,46 @@
       </div>
     </div>
   </div>
-  <div class="row p-2">
-    
-    <button *ngIf="hasRoute('/expert')" mat-raised-button color="primary" class="m-2" [disabled]="isCallStarted$ | async" (click)="showModal(false)">Start Call</button>
-    <button mat-raised-button color="primary" class="m-2" *ngIf="hasRoute('/expert')">
+  <div class="row">
+ <!-- <p> -->
+  <mat-toolbar>
+    <mat-toolbar-row>
+    <div class="toolbardiv">
+       
+    <button *ngIf="hasRoute('/expert')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="isCallStarted$ | async" (click)="showModal(false)">
+      <mat-icon a-hidden="false" aria-label="Example home icon">call</mat-icon>
+    </button>
+    <button mat-raised-button color="warn" class="m-2" *ngIf="(isCallStarted$ | async)" (click)="endCall()">
+      <mat-icon a-hidden="false" aria-label="Example home icon">call_end</mat-icon>
+    </button>
+    <button *ngIf="hasRoute('/user')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="(isCallStarted$ | async)&&localpeerid" (click)="showModal(true)">
+      <mat-icon a-hidden="false" aria-label="Example home icon">call</mat-icon>
+    </button>
+    <button mat-raised-button class="m-2" *ngIf="hasRoute('/expert')">
       <mat-icon a-hidden="false" aria-label="Example home icon">edit</mat-icon>
       </button>
-      <button mat-raised-button color="primary" class="m-2" *ngIf="hasRoute('/expert')">
+      <button mat-raised-button class="m-2" *ngIf="hasRoute('/expert')">
       <mat-icon a-hidden="false" aria-label="Example home icon">crop_square</mat-icon>
       </button>
-            <button mat-raised-button color="primary" class="m-2" *ngIf="hasRoute('/expert')">
-      <div class="circle"></div>
+            <button mat-raised-button class="m-2" *ngIf="hasRoute('/expert')">
+      <i class="bi bi-circle" style="font-size: 1.5rem;"></i>
       </button>
-    <button *ngIf="hasRoute('/user')" mat-raised-button class="m-2" [disabled]="(isCallStarted$ | async)&&localpeerid" (click)="showModal(true)">Join Call</button>
-    <button mat-raised-button color="primary" class="m-2" (click)="videoToggle()" *ngIf="hasRoute('/user')">
+    <button mat-raised-button class="m-2" (click)="videoToggle()" *ngIf="hasRoute('/user')">
       <mat-icon *ngIf="!videostatus"a-hidden="false" aria-label="Example home icon">videocam_off</mat-icon>
       <mat-icon *ngIf="videostatus"a-hidden="false" aria-label="Example home icon">videocam</mat-icon>
     </button>
-    <button mat-raised-button color="primary" class="m-2" (click)="audioToggle()">
+    <button mat-raised-button class="m-2" (click)="audioToggle()">
       <mat-icon *ngIf="!audiostatus"a-hidden="false" aria-label="Example home icon">mic_off</mat-icon>
       <mat-icon *ngIf="audiostatus"a-hidden="false" aria-label="Example home icon">mic_none</mat-icon>
     </button>
-        <button mat-raised-button color="primary" class="m-2" (click)="cameraToggle()" [disabled]="!videostatus" *ngIf="hasRoute('/user')">
+        <button mat-raised-button class="m-2" (click)="cameraToggle()" [disabled]="!videostatus" *ngIf="hasRoute('/user')">
       <mat-icon a-hidden="false" aria-label="Example home icon">switch_camera</mat-icon>
       <!-- <mat-icon *ngIf="camerastatus"a-hidden="false" aria-label="Example home icon">camera_rear</mat-icon> -->
     </button>
-    <button mat-raised-button color="warn" class="m-2" [disabled]="!(isCallStarted$ | async)" (click)="endCall()">End Call</button>
+    </div>
+    
+</mat-toolbar-row>
+  </mat-toolbar>
+<!-- </p>     -->
   </div>
 </div>
