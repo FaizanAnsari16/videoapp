@@ -16,6 +16,7 @@ import { CallService } from './call.service';
 import { StatusService } from './status.service';
 import {MatIconModule} from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatDividerModule} from '@angular/material/divider';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatSnackBarModule,
     MatIconModule,
     HttpClientModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatDividerModule
   ],
   providers: [
     CallService,

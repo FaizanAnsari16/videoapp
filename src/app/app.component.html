@@ -3,7 +3,7 @@
   <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
     <mat-icon>menu</mat-icon>
   </button>
-  <span>Video App</span>
+  <span>Help Please</span>
   <span class="example-spacer"></span>
   <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
     <mat-icon>favorite</mat-icon>
@@ -37,6 +37,11 @@
     <button *ngIf="hasRoute('/user')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="(isCallStarted$ | async)&&localpeerid" (click)="showModal(true)">
       <mat-icon a-hidden="false" aria-label="Example home icon">call</mat-icon>
     </button>
+          <button mat-raised-button class="m-2" (click)="audioToggle()">
+      <mat-icon *ngIf="!audiostatus"a-hidden="false" aria-label="Example home icon">mic_off</mat-icon>
+      <mat-icon *ngIf="audiostatus"a-hidden="false" aria-label="Example home icon">mic_none</mat-icon>
+    </button>
+    <span class="seperator" *ngIf="hasRoute('/expert')"></span>
     <button mat-raised-button class="m-2" *ngIf="hasRoute('/expert')">
       <mat-icon a-hidden="false" aria-label="Example home icon">edit</mat-icon>
       </button>
@@ -46,13 +51,10 @@
             <button mat-raised-button class="m-2" *ngIf="hasRoute('/expert')">
       <i class="bi bi-circle" style="font-size: 1.5rem;"></i>
       </button>
+    
     <button mat-raised-button class="m-2" (click)="videoToggle()" *ngIf="hasRoute('/user')">
       <mat-icon *ngIf="!videostatus"a-hidden="false" aria-label="Example home icon">videocam_off</mat-icon>
       <mat-icon *ngIf="videostatus"a-hidden="false" aria-label="Example home icon">videocam</mat-icon>
-    </button>
-    <button mat-raised-button class="m-2" (click)="audioToggle()">
-      <mat-icon *ngIf="!audiostatus"a-hidden="false" aria-label="Example home icon">mic_off</mat-icon>
-      <mat-icon *ngIf="audiostatus"a-hidden="false" aria-label="Example home icon">mic_none</mat-icon>
     </button>
         <button mat-raised-button class="m-2" (click)="cameraToggle()" [disabled]="!videostatus" *ngIf="hasRoute('/user')">
       <mat-icon a-hidden="false" aria-label="Example home icon">switch_camera</mat-icon>
