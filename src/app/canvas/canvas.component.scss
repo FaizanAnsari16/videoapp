@@ -1,6 +1,18 @@
+.shapeCanvas{
+   height:84vh;
+   width: 100%;
+}
+.canvaspointer{
+	cursor: crosshair;
+}
+.shape{
+  fill-opacity:0;
+  stroke:black;
+  stroke-width:1;
+}
 #video-wrapper {
 	text-align: center;
-    // background-color: #343434;
+    display: flex;
 	border-radius: 4px;
 }
 .p-2{
@@ -8,10 +20,11 @@
 	margin:0 18px
 }
 #remote-video {
+	flex: 1 1;
 	max-width: 100%;
-	max-height: 90vh;
+	max-height: 84vh;
 	height: 100vh;
-	border-radius: 4px;
+	object-fit: fill;
 }
 .videoperview{
 	max-width: 100%;
@@ -37,11 +50,16 @@
 }
 .bottom-toolbar{display: flex;justify-content: center;}
 .bottom-toolbar .toolbardiv{border-radius: 5px;}
+@media only screen and (max-width: 400px) {
+	.mat-raised-button{
+	margin: 0.1rem!important;}	
+}
 @media only screen and (max-width: 600px) {
 .mat-raised-button{
 	min-width: 50px;
 	padding: 1px 6px;
 }
+#remote-video{object-fit: cover;}
 }
 .example-spacer {
   flex: 1 1 auto;

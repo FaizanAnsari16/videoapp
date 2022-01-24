@@ -27,7 +27,7 @@ hasRoute(route:string){
     return this.router.url===route
   }
     public initPeer(): string {
-        console.log('initpeer')
+        // console.log('initpeer')
         if (!this.peer || this.peer.disconnected) {
             const peerJsOptions: Peer.PeerJSOption = {
                 debug: 3,

@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button'
 import { CallInfoDialogComponents } from './dialog/callinfo-dialog.component';
@@ -17,11 +17,16 @@ import { StatusService } from './status.service';
 import {MatIconModule} from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatDividerModule} from '@angular/material/divider';
+import { AppComponent } from './app.component';
+import { CanvasComponent } from './canvas/canvas.component';
+import { ShapeService } from './shape.service';
+// import { FreehandCanvasComponent } from './canvas/freehandcanvas';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CallInfoDialogComponents,
+    CanvasComponent,
+    CallInfoDialogComponents
   ],
   imports: [
     BrowserModule,
@@ -40,6 +45,7 @@ import {MatDividerModule} from '@angular/material/divider';
     MatDividerModule
   ],
   providers: [
+    ShapeService,
     CallService,
     StatusService
   ],

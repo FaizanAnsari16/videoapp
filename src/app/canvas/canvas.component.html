@@ -1,0 +1,121 @@
+<!-- <router-outlet></router-outlet> -->
+<div class="container-fluid" >
+  <mat-toolbar color="primary">
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>Help Please</span>
+    <span class="example-spacer"></span>
+    <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+      <mat-icon>favorite</mat-icon>
+    </button>
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+      <mat-icon>share</mat-icon>
+    </button>
+  </mat-toolbar>
+    <div class="row">
+      <div class="col text-center" style="overflow: hidden;">
+        <div id="video-wrapper">
+          <video *ngIf="hasRoute('/expert')&&!(isCallStarted$ | async)" #remoteVideo id="remote-video" autoplay playsinline poster="./assets/video-placeholder.jpg"></video>
+          <video *ngIf="hasRoute('/user')" #localVideo id="remote-video"  [muted]=true poster="./assets/video-placeholder.jpg" autoplay playsinline></video>
+          <video *ngIf="hasRoute('/expert')&&(isCallStarted$ | async)" #remoteVideo id="remote-video" autoplay playsinline poster="./assets/video-placeholder.jpg"></video>
+          <div *ngIf="hasRoute('/expert')&&(isCallStarted$ | async)" [ngClass]="shapeType==='rectangle'||shapeType==='ellipse'?'canvaspointer':null"
+          [ngStyle]="{'position': 'absolute','width':'100%','padding-right':'29px'}"
+          
+          >
+         
+          <svg 
+          [ngClass]="hoverstatus?'hoverclass':null"
+          class="shapeCanvas" 
+  (mousedown)="startDrawing($event)" 
+  (mouseup)="stopDrawing($event)"
+  (mousemove)="keepDrawing($event)"
+>
+<ng-container *ngFor="let shape of shapesToDraw">
+  <rect class="shape" *ngIf="shape.type=='rectangle'" 
+   [style.stroke-width]="shape==(currentShape|async)?2:1" 
+   [attr.x]="shape.x" 
+   [attr.y]="shape.y" 
+   [attr.width]="shape.w"       
+   [attr.height]="shape.h"></rect>
+  <line class="shape" *ngIf="shape.type=='line'" 
+   [style.stroke-width]="shape==(currentShape|async)?2:1" 
+   [attr.x1]="shape.x" 
+   [attr.y1]="shape.y" 
+   [attr.x2]="shape.x*1+shape.w*1"       
+   [attr.y2]="shape.y*1+shape.h*1"></line>
+  <ellipse class="shape" *ngIf="shape.type=='ellipse'" 
+   [style.stroke-width]="shape==(currentShape|async)?2:1" 
+   [attr.cx]="shape.x*1+shape.w/2" 
+   [attr.cy]="shape.y*1+shape.h/2" 
+   [attr.rx]="shape.w/2"       
+   [attr.ry]="shape.h/2"></ellipse>
+</ng-container>
+</svg>
+</div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      
+   <!-- <p> -->
+    <mat-toolbar class="toolbar">
+      <mat-toolbar-row class="bottom-toolbar">
+      <div class="toolbardiv">
+         
+      <button *ngIf="hasRoute('/expert')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="isCallStarted$ | async" (click)="showModal(false)">
+        <mat-icon a-hidden="false" aria-label="Example home icon">call</mat-icon>
+      </button>
+      <button mat-raised-button color="warn" class="m-2" *ngIf="(isCallStarted$ | async)" (click)="endCall()">
+        <mat-icon a-hidden="false" aria-label="Example home icon">call_end</mat-icon>
+      </button>
+      <button *ngIf="hasRoute('/user')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="(isCallStarted$ | async)&&localpeerid" (click)="showModal(true)">
+        <mat-icon a-hidden="false" aria-label="Example home icon">call</mat-icon>
+      </button>
+            <button mat-raised-button class="m-2" (click)="audioToggle()">
+        <mat-icon *ngIf="!audiostatus"a-hidden="false" aria-label="Example home icon">mic_off</mat-icon>
+        <mat-icon *ngIf="audiostatus"a-hidden="false" aria-label="Example home icon">mic_none</mat-icon>
+      </button>
+      <span class="seperator" *ngIf="hasRoute('/expert')"></span>
+      <button mat-raised-button class="m-2" *ngIf="hasRoute('/expert')" (click)="setType('freehand')"
+      [disabled]="!(isCallStarted$ | async)"
+      >
+        <mat-icon a-hidden="false" aria-label="Example home icon">edit</mat-icon>
+        </button>
+        <button mat-raised-button class="m-2"
+        [color]="shapeType==='rectangle'?'primary':null"
+        *ngIf="hasRoute('/expert')" (click)="shapeType!=='rectangle'?setType('rectangle'):setType('')" [disabled]="!(isCallStarted$ | async)">
+        <mat-icon a-hidden="false" aria-label="Example home icon">crop_square</mat-icon>
+        </button>
+        <button 
+        [disabled]="!(isCallStarted$ | async)"
+        mat-raised-button class="m-2" *ngIf="hasRoute('/expert')" [color]="hoverstatus?'primary':null" (click)="changehoverstatus()">
+          <mat-icon a-hidden="false" aria-label="Example home icon">arrow_right_alt</mat-icon>
+          </button>
+              <button mat-raised-button class="m-2"
+              [disabled]="!(isCallStarted$ | async)"
+              [color]="shapeType==='ellipse'?'primary':null"
+              *ngIf="hasRoute('/expert')" (click)="shapeType!=='ellipse'?setType('ellipse'):setType('')">
+        <i class="bi bi-circle" style="font-size: 1.5rem;"></i>
+        </button>
+      
+      <button mat-raised-button class="m-2" (click)="videoToggle()" *ngIf="hasRoute('/user')">
+        <mat-icon *ngIf="!videostatus"a-hidden="false" aria-label="Example home icon">videocam_off</mat-icon>
+        <mat-icon *ngIf="videostatus"a-hidden="false" aria-label="Example home icon">videocam</mat-icon>
+      </button>
+          <button mat-raised-button class="m-2" (click)="cameraToggle()" [disabled]="!videostatus" *ngIf="hasRoute('/user')">
+        <mat-icon a-hidden="false" aria-label="Example home icon">switch_camera</mat-icon>
+        <!-- <mat-icon *ngIf="camerastatus"a-hidden="false" aria-label="Example home icon">camera_rear</mat-icon> -->
+      </button>
+      </div>
+      
+  </mat-toolbar-row>
+    </mat-toolbar>
+  <!-- </p>     -->
+    </div>
+    
+  </div>
+  
+
+
+
