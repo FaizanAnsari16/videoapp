@@ -12,6 +12,7 @@
     <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
       <mat-icon>share</mat-icon>
     </button>
+    
   </mat-toolbar>
     <div class="row">
       <div class="col text-center" style="overflow: hidden;">
@@ -19,33 +20,52 @@
           <video *ngIf="hasRoute('/expert')&&!(isCallStarted$ | async)" #remoteVideo id="remote-video" autoplay playsinline poster="./assets/video-placeholder.jpg"></video>
           <video *ngIf="hasRoute('/user')" #localVideo id="remote-video"  [muted]=true poster="./assets/video-placeholder.jpg" autoplay playsinline></video>
           <video *ngIf="hasRoute('/expert')&&(isCallStarted$ | async)" #remoteVideo id="remote-video" autoplay playsinline poster="./assets/video-placeholder.jpg"></video>
-          <div *ngIf="hasRoute('/expert')&&(isCallStarted$ | async)" [ngClass]="shapeType==='rectangle'||shapeType==='ellipse'?'canvaspointer':null"
+         
+          <div *ngIf="(isCallStarted$ | async)" [ngClass]="shapeType==='rectangle'||shapeType==='ellipse'?'canvaspointer':null"
           [ngStyle]="{'position': 'absolute','width':'100%','padding-right':'29px'}"
           
           >
-         
+          
           <svg 
           [ngClass]="hoverstatus?'hoverclass':null"
           class="shapeCanvas" 
-  (mousedown)="startDrawing($event)" 
-  (mouseup)="stopDrawing($event)"
-  (mousemove)="keepDrawing($event)"
+  (mousedown)="hasRoute('/expert')&&startDrawing($event)" 
+  (mouseup)="hasRoute('/expert')&&stopDrawing($event)"
+  (mousemove)="hasRoute('/expert')&&keepDrawing($event)"
+  
 >
 <ng-container *ngFor="let shape of shapesToDraw">
-  <rect class="shape" *ngIf="shape.type=='rectangle'" 
-   [style.stroke-width]="shape==(currentShape|async)?2:1" 
-   [attr.x]="shape.x" 
+  <svg 
+  *ngIf="shape.type=='pointer'" 
+  [attr.x]="shape.x" 
+   [attr.y]="shape.y"
+  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <path fill="none" d="M0 0h24v24H0V0z"/><path fill="#FF411C" stroke="#FF411C" d="M16.01 11H4v2h12.01v3L20 12l-3.99-4v3z"/>
+  </svg>
+  <!-- <svg *ngIf="shape.type=='pointer'" 
+  [attr.x]="shape.x" 
    [attr.y]="shape.y" 
+        >
+          
+          <path 
+          fill="#1f1f1f" d="M41.6 31.3l12.8-12.8L0 0l18.5 54.3 12.8-12.7L53.7 64 64 53.7 41.6 31.3z" stroke-width="1"/>
+        </svg> -->
+  <rect class="shape" *ngIf="shape.type=='rectangle'" 
+   [style.stroke-width]="3" 
+   [attr.x]="shape.x" 
+   [attr.y]="shape.y"
+   [style.stroke]="'#FF411C'" 
    [attr.width]="shape.w"       
    [attr.height]="shape.h"></rect>
   <line class="shape" *ngIf="shape.type=='line'" 
-   [style.stroke-width]="shape==(currentShape|async)?2:1" 
+   [style.stroke-width]="3" 
    [attr.x1]="shape.x" 
    [attr.y1]="shape.y" 
    [attr.x2]="shape.x*1+shape.w*1"       
    [attr.y2]="shape.y*1+shape.h*1"></line>
   <ellipse class="shape" *ngIf="shape.type=='ellipse'" 
-   [style.stroke-width]="shape==(currentShape|async)?2:1" 
+   [style.stroke-width]="3" 
+   [style.stroke]="'#FF411C'" 
    [attr.cx]="shape.x*1+shape.w/2" 
    [attr.cy]="shape.y*1+shape.h/2" 
    [attr.rx]="shape.w/2"       
@@ -63,13 +83,13 @@
       <mat-toolbar-row class="bottom-toolbar">
       <div class="toolbardiv">
          
-      <button *ngIf="hasRoute('/expert')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="isCallStarted$ | async" (click)="showModal(false)">
+      <button *ngIf="hasRoute('/expert')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="isCallStarted$ | async" (click)="showModal(true)">
         <mat-icon a-hidden="false" aria-label="Example home icon">call</mat-icon>
       </button>
       <button mat-raised-button color="warn" class="m-2" *ngIf="(isCallStarted$ | async)" (click)="endCall()">
         <mat-icon a-hidden="false" aria-label="Example home icon">call_end</mat-icon>
       </button>
-      <button *ngIf="hasRoute('/user')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="(isCallStarted$ | async)&&localpeerid" (click)="showModal(true)">
+      <button *ngIf="hasRoute('/user')&&!(isCallStarted$ | async)" mat-raised-button class="m-2" [disabled]="(isCallStarted$ | async)&&localpeerid" (click)="showModal(false)">
         <mat-icon a-hidden="false" aria-label="Example home icon">call</mat-icon>
       </button>
             <button mat-raised-button class="m-2" (click)="audioToggle()">
@@ -89,7 +109,7 @@
         </button>
         <button 
         [disabled]="!(isCallStarted$ | async)"
-        mat-raised-button class="m-2" *ngIf="hasRoute('/expert')" [color]="hoverstatus?'primary':null" (click)="changehoverstatus()">
+        mat-raised-button class="m-2" *ngIf="hasRoute('/expert')" [color]="shapeType==='pointer'?'primary':null" (click)="changehoverstatus();shapeType!=='pointer'?setType('pointer'):setType('')">
           <mat-icon a-hidden="false" aria-label="Example home icon">arrow_right_alt</mat-icon>
           </button>
               <button mat-raised-button class="m-2"

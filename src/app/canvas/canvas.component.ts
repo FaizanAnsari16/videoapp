@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy,ElementRef,ViewChild } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { MatDialog } from '@angular/material/dialog';
 import { interval, Observable, of,Subscription,fromEvent } from 'rxjs';
@@ -12,23 +12,32 @@ import { Router } from '@angular/router';
   templateUrl: './canvas.component.html',
   styleUrls: ['./canvas.component.scss']
 })
-export class CanvasComponent implements OnInit,OnDestroy,AfterViewInit {
+export class CanvasComponent implements OnInit,OnDestroy {
   public isCallStarted$: Observable<boolean>;
-  private peerId: string;
+  private peerId:string
+  public sendingdata:Observable<any>
   name = "Angular";
   @ViewChild('localVideo') localVideo: ElementRef<HTMLVideoElement>;
     @ViewChild('remoteVideo') remoteVideo: ElementRef<HTMLVideoElement>;
-  constructor( private el: ElementRef,
+    @Input() shapesToDraw: Shape[];
+    mySubscription: Subscription
+    constructor( private el: ElementRef,
     public dialog: MatDialog,
     private callService: CallService,
+  
     private router: Router) {
+      // if(this.shapeType==='pointer'){this.mySubscription=interval(1000).subscribe((x)=>this.sendData(this.shapesToDraw))}
       this.isCallStarted$ = this.callService.isCallStarted$;
-      this.peerId = this.callService.initPeer();
+      this.peerId = this.callService.initPeer()
+      this.sendingdata=this.callService.dataval$
+      this.sendingdata.subscribe((data)=>{        
+        this.shapesToDraw=data
+      })
      }
-  @Input() shapesToDraw: Shape[];
+  
   shapeType = '';
   setType(type: string) { 
-    this.hoverstatus=false
+    
     this.shapeType = type; }
 
   @Input() currentShape: Subject<Shape>;
@@ -54,7 +63,7 @@ export class CanvasComponent implements OnInit,OnDestroy,AfterViewInit {
     this.callService.localStream$
       .pipe(filter((res) => !!res))
       .subscribe(
-        (stream) => (this.localVideo.nativeElement.srcObject = stream,console.log('a'))
+        (stream) => (this.localVideo.nativeElement.srcObject = stream)
       );
     this.callService.remoteStream$
       .pipe(filter((res) => !!res))
@@ -63,12 +72,7 @@ export class CanvasComponent implements OnInit,OnDestroy,AfterViewInit {
       );
   }
 
-  public startCall() {
-    this.callService.enableCallAnswer();
-  }
-ngAfterViewInit() {
-  console.log('aa',this.remoteVideo.nativeElement.videoWidth)
-}
+
   ngOnDestroy(): void {
     this.callService.destroyPeer();
   }
@@ -90,7 +94,7 @@ ngAfterViewInit() {
         );
   }
   public endCall() {
-    if (this.hasRoute('/expert')) {
+    if (this.hasRoute('/user')) {
       localStorage.removeItem('peerid');
     } else {
       location.reload();
@@ -104,39 +108,69 @@ ngAfterViewInit() {
     return this.router.url === route;
   }
   changehoverstatus() {
-    if(!this.hoverstatus){
-      this.setType('')
-    }
     this.hoverstatus = !this.hoverstatus;
-    
   }
   
 
   // the shape being just drawn
   createdShape: Shape;
 
+  
+
+ buttoncnt=false
+  keepDrawing(evt: MouseEvent) {
+    if(this.shapeType==='pointer'){
+      this.createdShape = {
+        type: this.shapeType,
+        x: evt.offsetX,
+        y: evt.offsetY,
+        w: 0,
+        h: 0
+      };
+      if(this.shapesToDraw.filter((i)=>i.type==='pointer').length>0)
+      {
+     this.shapesToDraw[this.shapesToDraw.findIndex((i)=>i.type)]=this.createdShape
+    }
+    else
+      this.shapesToDraw.push(this.createdShape)
+      this.callService.senddatavalue(this.shapesToDraw)
+    }
+
+else
+    {if (this.createdShape) {
+      this.currentShape.next(this.createdShape);
+      this.createdShape.w = evt.offsetX - this.createdShape.x;
+      this.createdShape.h = evt.offsetY - this.createdShape.y;
+      // console.log('first',this.currentShape);
+    }
+    if(evt.buttons===1){
+      this.buttoncnt=true      
+          }
+          if(this.buttoncnt&&evt.buttons===0){
+            this.sendData(this.shapesToDraw)
+            this.buttoncnt=false
+          }
+  }
+    
+    
+    // this.sendData(this.createdShape) 
+  }
   startDrawing(evt: MouseEvent) {
-    this.createdShape = {
+    if(this.shapeType!=='pointer'){this.createdShape = {
       type: this.shapeType,
       x: evt.offsetX,
       y: evt.offsetY,
       w: 0,
       h: 0
     };
-    this.shapesToDraw.push(this.createdShape);
-  }w
-
-
-  keepDrawing(evt: MouseEvent) {
-    if (this.createdShape) {
-      this.currentShape.next(this.createdShape);
-      this.createdShape.w = evt.offsetX - this.createdShape.x;
-      this.createdShape.h = evt.offsetY - this.createdShape.y;
-    }
-  }
-
+      this.shapesToDraw.push(this.createdShape);}}
+    // this.sendData(this.shapesToDraw);
+  
   stopDrawing(evt: MouseEvent) {
     this.createdShape = null;
   }
+sendData(msg){
+  this.callService.senddatavalue(msg)
+}
 
 }

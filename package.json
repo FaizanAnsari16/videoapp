@@ -8,8 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "server": "json-server --watch db.json --port 5000",
-    "devStart": "nodemon server.js"
+    "json:server": "json-server --watch data.json"
   },
   "private": true,
   "dependencies": {

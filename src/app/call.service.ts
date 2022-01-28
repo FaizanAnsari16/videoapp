@@ -13,21 +13,25 @@ export class CallService {
 
     private peer: Peer;
     private mediaCall: Peer.MediaConnection;
-  
+    public connection$
     private localStreamBs: BehaviorSubject<MediaStream> = new BehaviorSubject(null);
     public localStream$ = this.localStreamBs.asObservable();
     private remoteStreamBs: BehaviorSubject<MediaStream> = new BehaviorSubject(null);
     public remoteStream$ = this.remoteStreamBs.asObservable();
-
+    public datavalues
     private isCallStartedBs = new Subject<boolean>();
     public isCallStarted$ = this.isCallStartedBs.asObservable();
-
-    constructor(private snackBar: MatSnackBar,private router:Router) { }
+    private dataval=new Subject<any>()
+    public dataval$=this.dataval.asObservable()
+    constructor(private snackBar: MatSnackBar,private router:Router) {
+        
+     }
 hasRoute(route:string){
     return this.router.url===route
   }
-    public initPeer(): string {
-        // console.log('initpeer')
+
+  public initPeer() {
+        console.log('initpeer')
         if (!this.peer || this.peer.disconnected) {
             const peerJsOptions: Peer.PeerJSOption = {
                 debug: 3,
@@ -42,62 +46,84 @@ hasRoute(route:string){
                 }
             };
             try {
-                let id = uuidv4();
+                let id:string = uuidv4();
+                
                 this.peer = new Peer(id, peerJsOptions);
-                return id;
+                this.peer.on('connection',(con)=>{
+                    con.on('data',(data)=>{
+                    this.dataval.next(data)
+                    })
+                })
+                return id
             } catch (error) {
                 console.error(error);
             }
         }
     }
-
-    public async establishMediaCall(remotePeerId: string) {
-        try {
-            videostatus=true
-            audiostatus=true
-            const stream = await navigator.mediaDevices.getUserMedia({ video:this.hasRoute('/expert')?false: videostatus?
-                { facingMode: camerastatus?{exact:"environment"}:"user" }:videostatus
-                , audio: audiostatus });
-            console.log('establishMediaCall')
-            const connection = this.peer.connect(remotePeerId);
-            connection.on('error', err => {
-                console.error(err);
-                this.snackBar.open(err, 'Close',{
-                    duration:1000
-                });
+public senddatavalue(msg){
+    
+    this.connection$.send(msg)
+    this.connection$.on('data',(data)=>{
+        this.dataval.next(data)
+    })
+    // this.peer.on('connection',(con)=>{
+    //     con.on('data',(data)=>{
+    //     this.dataval.next(data)
+    //     })
+    // })
+}
+public async establishMediaCall(remotePeerId: string) {
+    try {
+        videostatus=true
+        audiostatus=true
+        const stream = await navigator.mediaDevices.getUserMedia({ video:videostatus?
+            { facingMode: camerastatus?{exact:"environment"}:"user" }:videostatus
+            , audio: audiostatus });
+        console.log('establishMediaCall')
+        const connection = this.peer.connect(remotePeerId);
+        this.connection$=connection
+        // connection.on('open',()=>{
+        //     connection.send('values')
+        // })
+        connection.on('error', err => {
+            console.error(err);
+            this.snackBar.open(err, 'Close',{
+                duration:1000
             });
+        });
 
-            this.mediaCall = this.peer.call(remotePeerId, stream);
-            if (!this.mediaCall) {
-                let errorMessage = 'Unable to connect to remote peer';
-                this.snackBar.open(errorMessage, 'Close',{
-            duration:1000
-        });
-                throw new Error(errorMessage);
-            }
-            this.localStreamBs.next(stream);
-            this.isCallStartedBs.next(true);
-            this.mediaCall.on('stream',
-                (remoteStream) => {
-                    this.remoteStreamBs.next(remoteStream);
-                });
-            this.mediaCall.on('error', err => {
-                this.snackBar.open(err, 'Close',{
-            duration:1000
-        });
-                console.error(err);
-                this.isCallStartedBs.next(false);
-            });
-            this.mediaCall.on('close', () => this.onCallClose());
+        this.mediaCall = this.peer.call(remotePeerId, stream);
+        if (!this.mediaCall) {
+            let errorMessage = 'Unable to connect to remote peer';
+            this.snackBar.open(errorMessage, 'Close',{
+        duration:1000
+    });
+            throw new Error(errorMessage);
         }
-        catch (ex) {
-            console.error(ex);
-            this.snackBar.open(ex, 'Close',{
-            duration:1000
-        });
+        this.localStreamBs.next(stream);
+        this.isCallStartedBs.next(true);
+        this.mediaCall.on('stream',
+            (remoteStream) => {
+                this.remoteStreamBs.next(remoteStream);
+            });
+        this.mediaCall.on('error', err => {
+            this.snackBar.open(err, 'Close',{
+        duration:1000
+    });
+            console.error(err);
             this.isCallStartedBs.next(false);
-        }
+        });
+        this.mediaCall.on('close', () => this.onCallClose());
     }
+    catch (ex) {
+        console.error(ex);
+        this.snackBar.open(ex, 'Close',{
+        duration:1000
+    });
+        this.isCallStartedBs.next(false);
+    }
+}
+    
 public async toggleVideo() {
     console.log('object',videostatus)
         try {
@@ -243,13 +269,13 @@ public async toggleVideo() {
     public async enableCallAnswer() {
         console.log('enableCallAnswer')
         try {
-            
             audiostatus=true
-            const stream = await navigator.mediaDevices.getUserMedia({ video:this.hasRoute('/expert')?false: videostatus?
+            videostatus=true
+            const stream = await navigator.mediaDevices.getUserMedia({ video: videostatus?
                 { facingMode: camerastatus?{exact:"environment"}:"user" }:videostatus, audio: audiostatus });
             this.localStreamBs.next(stream);
             this.peer.on('call', async (call) => {
-    
+                
                 this.mediaCall = call;
                 this.isCallStartedBs.next(true);
     
